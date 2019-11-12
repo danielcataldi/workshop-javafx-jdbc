@@ -60,56 +60,55 @@ public class DepartmentFormController implements Initializable {
 	
 	@FXML
 	public void onBtSaveAction(ActionEvent event) {
-		if(entity == null) {
-			throw new IllegalStateException("Entidade vazia");
+		if (entity == null) {
+			throw new IllegalStateException("Entity was null");
 		}
-		
-		if(service == null) {
-			throw new IllegalStateException("Serviço vazio");
+		if (service == null) {
+			throw new IllegalStateException("Service was null");
 		}
-		
 		try {
-		entity = getFormData();
-		service.saveOrUpdate(entity);
-		notifyDataChangeListeners();
-		Utils.currentState(event).close();
+			entity = getFormData();
+			service.saveOrUpdate(entity);
+			notifyDataChangeListeners();
+			Utils.currentState(event).close();
 		}
-		catch(ValidationException e) {
+		catch (ValidationException e) {
 			setErrorMessages(e.getErrors());
 		}
 		catch (DbException e) {
-			Alerts.showAlert("Erro ao salvar Departamento", null, e.getMessage(), AlertType.ERROR);
+			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
 		}
-	};
+	}
 	
 	private void notifyDataChangeListeners() {
-		for(DataChangeListener listener : dataChangeListeners) {
+		for (DataChangeListener listener : dataChangeListeners) {
 			listener.onDataChanged();
-		}	
+		}
 	}
 
 	private Department getFormData() {
 		Department obj = new Department();
 		
-		ValidationException exception = new ValidationException("Erro de validação");
+		ValidationException exception = new ValidationException("Validation error");
 		
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
 		
-		if(txtName.getText() == null || txtName.getText().trim().equals("")) {
-			exception.addError("name", "Campo não pode estar vazio");
+		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
+			exception.addError("name", "Field can't be empty");
 		}
 		obj.setName(txtName.getText());
 		
-		if(exception.getErrors().size() > 0) {
+		if (exception.getErrors().size() > 0) {
 			throw exception;
 		}
+		
 		return obj;
 	}
 
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
 		Utils.currentState(event).close();
-	};
+	}
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
@@ -122,17 +121,17 @@ public class DepartmentFormController implements Initializable {
 	}
 	
 	public void updateFormData() {
-		if(entity == null) {
-			throw new IllegalStateException("Entidade nula");
+		if (entity == null) {
+			throw new IllegalStateException("Entity was null");
 		}
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
 	}
 	
-	private void setErrorMessages(Map<String,String> errors) {
+	private void setErrorMessages(Map<String, String> errors) {
 		Set<String> fields = errors.keySet();
 		
-		if(fields.contains("name")) {
+		if (fields.contains("name")) {
 			labelErrorName.setText(errors.get("name"));
 		}
 	}
